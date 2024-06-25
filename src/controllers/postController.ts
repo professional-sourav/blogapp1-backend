@@ -7,6 +7,8 @@ import {
     updateSinglePost 
 } from "../models/post"
 import { Post } from "../../types/postType"
+import { PostAttachment } from "../../types/postAttachmentType";
+import { createNewPostAttachment } from "../models/postAttachmentModel"
 
 export const all = async (req: Request, res: Response) => {
 
@@ -90,4 +92,24 @@ export const remove = async (req: Request, res: Response) => {
 
         res.status(404).json({ message: "Post not found" })
     }    
+}
+
+export const upload = async (req: Request, res: Response) => {
+
+    if (req.file === undefined) {
+        return res.status(400).send({ message: "Please upload a file!" });
+    }
+
+    const attachmentData: PostAttachment = {
+        post: req.params.id,
+        attachment: req.file?.path,
+        createdAt: new Date()
+    }
+
+    const newAttachment = await createNewPostAttachment(
+        req.params.id, 
+        attachmentData
+    )
+
+    res.status(201).json(newAttachment)
 }

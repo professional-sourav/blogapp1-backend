@@ -4,7 +4,9 @@ import { Post as PostModel } from "../config/schemas/postSchema"
 
 export const getAllPosts = async () => {
 
-    const posts = await PostModel.find({})
+    const posts = await PostModel.find({
+        trashed: false
+    })
     
     if (!posts) {
         return [];
@@ -42,6 +44,19 @@ export const updateSinglePost = async (id: string, post: Post) => {
     const updatedPost = await PostModel.findOneAndUpdate({
         _id: id
     }, post, {
+        new: true
+    })
+
+    return updatedPost;
+}
+
+export const trashSinglePost = async (id: string) => {
+
+    const updatedPost = await PostModel.findOneAndUpdate({
+        _id: id
+    }, {
+        trashed: true
+    }, {
         new: true
     })
 

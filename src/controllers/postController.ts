@@ -1,5 +1,11 @@
 import { Request, Response } from "express"
-import { createNewPost, deleteSinglePost, getAllPosts, getPostById, updateSinglePost } from "../models/post"
+import { 
+    createNewPost, 
+    getAllPosts, 
+    getPostById, 
+    trashSinglePost, 
+    updateSinglePost 
+} from "../models/post"
 import { Post } from "../../types/postType"
 
 export const all = async (req: Request, res: Response) => {
@@ -46,10 +52,6 @@ export const update = async (req: Request, res: Response) => {
         res.status(500).json({ message: err.message })
     })
 
-    // if (!existingPost) {
-    //     res.status(404).json({ message: "Post not found" })
-    // }
-
     if (existingPost) {
         const updatedPost = await updateSinglePost(req.params.id, post).catch((err) => {
             console.log(err.message);
@@ -59,7 +61,10 @@ export const update = async (req: Request, res: Response) => {
         if (updatedPost) {
             res.status(200).json(updatedPost)    
         }
-    }
+    } else if (typeof existingPost !== 'undefined') {
+
+        res.status(404).json({ message: "Post not found" })
+    }  
 }
 
 export const remove = async (req: Request, res: Response) => {
@@ -71,14 +76,18 @@ export const remove = async (req: Request, res: Response) => {
         res.status(500).json({ message: err.message })
     })
 
+
     if (existingPost) {
 
-        deleteSinglePost(req.params.id)
+        trashSinglePost(req.params.id)
         .then((deletedPost) => {
             res.status(200).json(deletedPost)
         })
         .catch((err) => {
             res.status(500).json({ message: err.message })
         })
-    }
+    } else if (typeof existingPost !== 'undefined') {
+
+        res.status(404).json({ message: "Post not found" })
+    }    
 }

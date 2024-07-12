@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { Post } from "../../types/postType";
 import { Post as PostModel } from "../config/schemas/postSchema"
-import { PostAttachmentModel } from "../config/schemas/postAttachmentSchema";
 
 export const getAllPosts = async () => {
 

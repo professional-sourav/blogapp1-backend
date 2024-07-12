@@ -1,12 +1,32 @@
 import mongoose from "mongoose";
 import { Post } from "../../types/postType";
 import { Post as PostModel } from "../config/schemas/postSchema"
+import { PostAttachmentModel } from "../config/schemas/postAttachmentSchema";
 
 export const getAllPosts = async () => {
 
-    const posts = await PostModel.find({
-        trashed: false
-    })
+    const pipeline = [
+        {
+          $match: {
+            trashed: false // Filter out trashed documents
+          }
+        },
+        {
+          $lookup: {
+            from: "postattachments", // Name of the related collection
+            localField: "_id", // Field referencing related collection
+            foreignField: "post", // Field in related collection being matched
+            as: "attachments"
+          }
+        },
+        {
+          $addFields: {
+            "attachments": { $size: "$attachments" } // Count of related documents
+          }
+        }
+      ];
+
+    const posts: Post[] = await PostModel.aggregate(pipeline)
     
     if (!posts) {
         return [];

@@ -106,10 +106,7 @@ export const upload = async (req: Request, res: Response) => {
         createdAt: new Date()
     }
 
-    const newAttachment = await createNewPostAttachment(
-        req.params.id, 
-        attachmentData
-    )
+    const newAttachment = await createNewPostAttachment(attachmentData)
 
     res.status(201).json(newAttachment)
 }
